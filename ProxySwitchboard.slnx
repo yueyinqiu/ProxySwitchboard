@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ProxySwitchboard.Client/ProxySwitchboard.Client.csproj" />
+    <Project Path="src/ProxySwitchboard.Interface/ProxySwitchboard.Interface.csproj" />
+    <Project Path="src/ProxySwitchboard.Server/ProxySwitchboard.Server.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,57 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: ProxySwitchboard.Server",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-server",
+            "args": [
+                "--control-socket",
+                "/tmp/ndp-test.sock",
+                "--control-group",
+                "users",
+                "--proxy-password",
+                "testpass123",
+                "--proxy-port",
+                "20080",
+                "--nix-daemon-service"
+            ],
+            "program": "${workspaceFolder}/src/ProxySwitchboard.Server/bin/Debug/net10.0/ProxySwitchboard.Server.dll",
+            "cwd": "${workspaceFolder}/src/ProxySwitchboard.Server/bin/Debug/net10.0",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "C#: ProxySwitchboard.Client (Http)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-client",
+            "args": [
+                "http",
+                "--host-name",
+                "proxy.example.com",
+                "--port",
+                "8080",
+                "--control-socket",
+                "/tmp/ndp-test.sock"
+            ],
+            "program": "${workspaceFolder}/src/ProxySwitchboard.Client/bin/Debug/net10.0/ProxySwitchboard.Client.dll",
+            "cwd": "${workspaceFolder}/src/ProxySwitchboard.Client/bin/Debug/net10.0",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "C#: ProxySwitchboard.Client (Direct)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build-client",
+            "args": [
+                "direct",
+                "--control-socket",
+                "/tmp/ndp-test.sock"
+            ],
+            "program": "${workspaceFolder}/src/ProxySwitchboard.Client/bin/Debug/net10.0/ProxySwitchboard.Client.dll",
+            "cwd": "${workspaceFolder}/src/ProxySwitchboard.Client/bin/Debug/net10.0",
+            "console": "integratedTerminal"
+        }
+    ]
+}

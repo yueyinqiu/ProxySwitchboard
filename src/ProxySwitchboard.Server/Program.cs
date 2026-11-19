@@ -1,14 +1,8 @@
-﻿using System.Diagnostics;
 using System.Net;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using CliFx;
 using CliFx.Binding;
 using CliFx.Infrastructure;
-using CliWrap;
-using CliWrap.Buffered;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -26,17 +20,11 @@ public partial class Program : ICommand
     [CommandOption("control-socket", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_CONTROL_SOCKET")]
     public string ControlSocket { get; set; } = "/run/proxy-switchboard.sock";
 
-    [CommandOption("control-group", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_CONTROL_GROUP")]
-    public string? ControlGroup { get; set; } = "proxy-switchboard";
-
     [CommandOption("proxy-password", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_PROXY_PASSWORD")]
     public string? ProxyPassword { get; set; } = null;
 
     [CommandOption("proxy-port", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_PROXY_PORT")]
     public int ProxyPort { get; set; } = 0;
-
-    [CommandOption("nix-daemon-service", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_NIX_DAEMON_SERVICE")]
-    public string? NixDaemonService { get; set; } = "nix-daemon";
 
     private readonly Lock locker = new();
     private ProxyStatus current = new(null, null, "Not set");
@@ -90,32 +78,6 @@ public partial class Program : ICommand
         app.MapPost("/status", () => this.current);
 
         app.MapPost("/fingerprint", ([FromBody] Proxy? proxy) => new ProxyFingerprint(proxy?.GetFingerprint()));
-
-        var daemonConfigurator = NixDaemonService is null ? null : new ProxySwitchboardConfigurator(NixDaemonService);
-        app.Lifetime.ApplicationStarted.Register(() =>
-        {
-            if (ControlGroup is not null)
-            {
-                Debug.Assert(RuntimeInformation.IsOSPlatform(OSPlatform.Linux));
-                File.SetUnixFileMode(this.ControlSocket,
-                    UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.GroupRead | UnixFileMode.GroupWrite);
-
-                Cli.Wrap("chown").WithArguments([
-                    $":{this.ControlGroup}", this.ControlSocket
-                ]).ExecuteBufferedAsync().Task.Wait();
-            }
-
-            daemonConfigurator?.Update(
-                $"http://user:{password}@127.0.0.1:{proxyServer.ProxyEndPoints[0].Port}/"
-            );
-            daemonConfigurator?.RestartServiceAsync().Wait();
-        });
-
-        app.Lifetime.ApplicationStopping.Register(() =>
-        {
-            daemonConfigurator?.Update(null);
-            daemonConfigurator?.RestartServiceAsync().Wait();
-        });
 
         app.Run();
     }

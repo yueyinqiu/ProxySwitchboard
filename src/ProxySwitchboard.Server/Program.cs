@@ -36,6 +36,9 @@ public partial class Program : ICommand
         proxyServer.ProxyBasicAuthenticateFunc = async (_, _, x) => x == this.ProxyPassword;
         proxyServer.Start(false);
 
+        console.Output.WriteLine($"ProxyPort={proxyServer.ProxyEndPoints[0].Port}");
+        console.Output.WriteLine($"ControlSocket={this.ControlSocket}");
+
         var builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions());
         builder.WebHost.UseKestrel();
         builder.WebHost.ConfigureKestrel(options =>

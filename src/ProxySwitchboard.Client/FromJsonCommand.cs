@@ -12,7 +12,7 @@ namespace ProxySwitchboard.Client;
 partial class FromJsonCommand : ICommand
 {
     [CommandOption("control-socket", EnvironmentVariable = "PROXY_SWITCHBOARD_ARGUMENT_CONTROL_SOCKET")]
-    public string ControlSocket { get; set; } = "/run/proxy-switchboard.sock";
+    public required string ControlSocket { get; set; }
 
     [CommandOption("dry-run", EnvironmentVariable = "PROXY_SWITCHBOARD_ARGUMENT_DRY_RUN")]
     public bool DryRun { get; set; } = false;

@@ -18,24 +18,22 @@ namespace ProxySwitchboard.Server;
 public partial class Program : ICommand
 {
     [CommandOption("control-socket", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_CONTROL_SOCKET")]
-    public string ControlSocket { get; set; } = "/run/proxy-switchboard.sock";
+    public required string ControlSocket { get; set; }
 
     [CommandOption("proxy-password", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_PROXY_PASSWORD")]
-    public string? ProxyPassword { get; set; } = null;
+    public required string ProxyPassword { get; set; }
 
     [CommandOption("proxy-port", EnvironmentVariable = "PROXY_SWITCHBOARD_SERVER_ARGUMENT_PROXY_PORT")]
-    public int ProxyPort { get; set; } = 0;
+    public required int ProxyPort { get; set; }
 
     private readonly Lock locker = new();
     private ProxyStatus current = new(null, null, "Not set");
 
     public async ValueTask ExecuteAsync(IConsole console)
     {
-        var password = this.ProxyPassword ?? Guid.NewGuid().ToString("N");
-
         using var proxyServer = new ProxyServer(false);
         proxyServer.AddEndPoint(new ExplicitProxyEndPoint(new IPAddress([127, 0, 0, 1]), this.ProxyPort, false));
-        proxyServer.ProxyBasicAuthenticateFunc = async (_, _, x) => x == password;
+        proxyServer.ProxyBasicAuthenticateFunc = async (_, _, x) => x == this.ProxyPassword;
         proxyServer.Start(false);
 
         var builder = WebApplication.CreateEmptyBuilder(new WebApplicationOptions());

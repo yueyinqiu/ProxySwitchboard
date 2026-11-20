@@ -33,6 +33,7 @@
 
                   mkdir -p publish
                   pub="$(pwd)/publish"
+                  mkdir -p "''${TMPDIR:-/tmp}"
                   temp="$(mktemp -d)"
 
                   # linux-x64 (native AOT, single file)

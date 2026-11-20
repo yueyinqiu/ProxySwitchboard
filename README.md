@@ -98,6 +98,8 @@ ProxySwitchboard.Client status --control-socket <path>  [--json]
 
 > **Security:** never pass a password on the command line — options like `-p` are visible in `ps`. Use the `PROXY_SWITCHBOARD_ARGUMENT_PASSWORD` environment variable (or `from-json` on stdin) instead.
 
+The names shown by `--help` — the title on the first line and the executable name in the usage — can be overridden with the `PROXY_SWITCHBOARD_TITLE` and `PROXY_SWITCHBOARD_EXECUTABLE_NAME` environment variables. This is useful when the client is wrapped under a friendlier name.
+
 ## Security model
 
 - The local proxy binds `127.0.0.1` and requires Basic auth, so only consumers that know the password can go through it.
